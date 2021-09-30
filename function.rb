@@ -13,7 +13,8 @@ def main(event:, context:)
 
   if path != '/' and path != '/token'
     response(body: nil, status: 404)
-  elsif (path == '/' and method != 'GET') || (path == '/token' and method != 'POST')
+  elsif (path == '/' and method != 'GET') || 
+    (path == '/token' and method != 'POST')
     response(body: nil, status: 405)
   else
     response(body: event, status: 200)
