@@ -7,6 +7,13 @@ require 'pp'
 def main(event:, context:)
   # You shouldn't need to use context, but its fields are explained here:
   # https://docs.aws.amazon.com/lambda/latest/dg/ruby-context.html
+
+  path = event['path']
+  method = event['method']
+
+  if path != '\\' and path != '\\token'
+    response(body: nil, status: 404)
+  end
   response(body: event, status: 200)
 end
 
