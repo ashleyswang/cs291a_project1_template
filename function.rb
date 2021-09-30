@@ -9,9 +9,9 @@ def main(event:, context:)
   # https://docs.aws.amazon.com/lambda/latest/dg/ruby-context.html
 
   path = event['path']
-  method = event['method']
+  method = event['httpMethod']
 
-  if path != '\' and path != '\token'
+  if path != '\\' and path != '\\token'
     response(body: nil, status: 404)
   end
   response(body: event, status: 200)
