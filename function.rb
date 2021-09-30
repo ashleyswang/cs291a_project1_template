@@ -11,7 +11,7 @@ def main(event:, context:)
   path = event['path']
   method = event['method']
 
-  if path != '\\' and path != '\\token'
+  if path != '\' and path != '\token'
     response(body: nil, status: 404)
   end
   response(body: event, status: 200)
