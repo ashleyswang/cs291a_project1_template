@@ -13,7 +13,7 @@ def main(event:, context:)
 
   if path != '/' and path != '/token'
     response(body: nil, status: 404)
-  elsif path == '/' and method != 'GET') 
+  elsif path == '/' and method != 'GET'
     response(body: nil, status: 405)
   elsif path == '/token'
     handle_token(event)
@@ -23,7 +23,7 @@ def main(event:, context:)
 
 end
 
-def handle_token(event) 
+def handle_token(event)  
   # Check HTTP method and content type
   if event['httpMethod'] != 'POST'
     response(body: nil, status: 405)
@@ -31,10 +31,12 @@ def handle_token(event)
     response(body: nil, status: 415)
   end
 
-  body = JSON.parse(event['body'])
-
-rescue JSON::ParserError => e  
-  response(body: nil, status: 422)
+  begin
+    body = JSON.parse(event['body'])
+  rescue JSON::ParserError => e  
+    response(body: nil, status: 422)
+  end
+  
 end
 
 def response(body: nil, status: 200)
