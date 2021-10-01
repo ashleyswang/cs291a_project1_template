@@ -33,17 +33,17 @@ def post_token(event)
   end
 
   begin
-    body = event['body']
-    JSON.parse(body)
+    JSON.parse(event['body'])
 
-  #   payload = {
-  #     data: event['body'],
-  #     exp: Time.now.to_i + 5,
-  #     nbf: Time.now.to_i + 2
-  #   }
-  #   token = JWT.encode payload, ENV['JWT_SECRET'], 'HS256'
-  #   body = { token: token }
-  #   return response(body: body, status: 201)
+    # payload = {
+    #   data: event['body'],
+    #   exp: Time.now.to_i + 5,
+    #   nbf: Time.now.to_i + 2
+    # }
+    # token = JWT.encode payload, ENV['JWT_SECRET'], 'HS256'
+    # body = { token: token }
+    # return response(body: body, status: 201)
+    return response(status: 201)
 
   rescue JSON::ParserError => e
     return response(body: nil, status: 422)
