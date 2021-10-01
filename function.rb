@@ -7,72 +7,96 @@ require 'pp'
 def main(event:, context:)
   # You shouldn't need to use context, but its fields are explained here:
   # https://docs.aws.amazon.com/lambda/latest/dg/ruby-context.html
-  path = event['path']
-  method = event['httpMethod']
 
-  if path != '/' && path != '/token'
-    return response(status: 404)
-  elsif path == '/'
-    get_root(event)
-  elsif path == '/token'
-    post_token(event)
-  else
-    response(body: event, status: 200)
-  end
-end
-
-def get_root(event) 
-  # Check Token
-  if event['httpMethod'] != 'GET'
-    return response(status: 405)
-  elsif !event['headers'].key?('Authorization')
-    return response(status: 403)
+  # return error 404 if request to any other resource
+  if event['path'] != '/' and event['path'] != '/token'
+    return response(body: nil, status: 404)
   end
 
-  begin
-    bearer, auth = event["headers"]["Authorization"].split(' ')
-    if bearer != 'Bearer'
-      return response(status: 403)
+  # return error 405 if request doesn't use Http method: GET and POST
+  if (event['path'] == '/' and event['httpMethod'] != 'GET') or (event['path'] == '/token' and event['httpMethod'] != 'POST')
+    return response(body: nil, status: 405)
+  end
+
+  # print('ENTERED')
+  
+  #GET
+  #if event['httpMethod'] == 'GET'
+   # if !event['headers'].key?('Authorization')
+    #  return response(body: nil, status: 403)
+   # end
+
+    #begin
+     # token = JWT.decode event["headers"]["Authorization"][7..-1], ENV["JWT_SECRET"], true, { algorithm: 'HS256' }
+      #return response(body: token[0]['data'], status: 200)
+    #rescue JWT::ImmatureSignature, JWT::ExpiredSignature => e
+     # return response(body: nil, status: 401)
+    #rescue JWT::DecodeError => e
+     # return response(body: nil, status: 403)
+    #end
+  #end
+  
+  if event['httpMethod'] == 'GET'
+    #found = false
+    event['headers'].each do |key, val|
+      if key.downcase == 'authorization'
+        # Authorization => Bearer #{token}
+        auth_token = val.split(' ')
+        #break if authToken.count != 2
+        #break if authToken[0] != 'Bearer'
+        # check format of header
+        if auth_token[0] != 'Bearer' or auth_token.count != 2
+          return response(body: nil, status: 403)
+        end
+        token = auth_token[1]
+        decoded_token = ''
+        begin
+          decoded_token = JWT.decode token, ENV['JWT_SECRET'], true, { algorithm: 'HS256' }
+        rescue JWT::ImmatureSignature, JWT::ExpiredSignature => e
+          return response(body: nil, status: 401)
+        rescue JWT::DecodeError => e
+          return response(body: e, status: 403)
+        end
+        #found = true
+        json_data = decoded_token[0]['data']
+        return response(body: json_data, status: 200)
+      end
+      #return response(body: nil, status: 403)
     end
-    
-    token = JWT.decode auth, ENV["JWT_SECRET"], true, { algorithm: 'HS256' }
-    return response(body: token[0]['data'], status: 200)
-  rescue JWT::ImmatureSignature, JWT::ExpiredSignature => e
-    return response(status: 401)
-  rescue JWT::DecodeError => e
-    return response(status: 403)
-  end
-end
-
-def post_token(event)  
-  # Check HTTP method and content type
-  if event['httpMethod'] != 'POST'
-    return response(status: 405)
-  elsif lower_dict(event['headers'])['content-type'] != 'application/json'
-    return response(status: 415)
   end
 
-  # Parse body and create payload for response
-  begin
-    body = JSON.parse(event['body'])
+  # POST
+  if event['httpMethod'] == 'POST'
+
+    # return error 415 if not JSON
+    event['headers'].each do |key, val|
+      if key.downcase == "content-type" and val != 'application/json'
+        return response(body: nil, status: 415)
+      end
+    end
+
+    # return error 422 if body not JSON
+    # check if body is empty
+    if event['body'] == '' or event['body'] == nil
+      return response(body: nil, status: 422)
+    end
+    begin
+      json_data = JSON.parse(event['body'])
+    rescue JSON::ParserError => e
+      return response(body: nil, status: 422)
+    end
+
     payload = {
-      data: body,
-      exp: Time.now.to_i + 5,
-      nbf: Time.now.to_i + 2
+      data: json_data,
+      exp: Time.now.to_i + 1,
+      nbf: Time.now.to_i
     }
-    token = JWT.encode payload, ENV['JWT_SECRET'], 'HS256'
-    return response(body: { token: token }, status: 201)
-  rescue Exception => e
-    return response(status: 422)
-  end
-end
 
-def lower_dict(dict) 
-  lower = {}
-  dict.each_pair do |k, v|
-    lower.merge!({k.downcase => v})
+    token = JWT.encode(payload, ENV['JWT_SECRET'], 'HS256')
+    return response(body: { 'token' => token }, status: 201)
   end
-  return lower
+  
+  response(body: event, status: 422)
 end
 
 def response(body: nil, status: 200)
