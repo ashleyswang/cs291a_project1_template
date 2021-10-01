@@ -11,9 +11,9 @@ def main(event:, context:)
   path = event['path']
   method = event['httpMethod']
 
-  if path != '/' and path != '/token'
+  if path != '/' && path != '/token'
     return response(status: 404)
-  elsif path == '/' and method != 'GET'
+  elsif path == '/' && method != 'GET'
     return response(status: 405)
   elsif path == '/token'
     post_token(event)
@@ -23,18 +23,25 @@ def main(event:, context:)
 
 end
 
+def get_root(event) 
+  # Check Token
+  if !event['headers'].key?('Authorization')
+    return response(status: 403)
+  end
+end
+
 def post_token(event)  
   # Check HTTP method and content type
   if event['httpMethod'] != 'POST'
     return response(status: 405)
-  elsif event['headers'].key?('Content-Type') and 
+  elsif event['headers'].key?('Content-Type') && 
     event['headers']['Content-Type'] != 'application/json'
     return response(status: 415)
   end
 
+  # Create payload for response
   begin
     body = JSON.parse(event['body'])
-
     payload = {
       data: body,
       exp: Time.now.to_i + 5,
@@ -46,7 +53,6 @@ def post_token(event)
   rescue JSON::ParserError => e
     return response(body: nil, status: 422)
   end
-
 end
 
 def response(body: nil, status: 200)
