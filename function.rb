@@ -68,7 +68,7 @@ end
 def lower_dict(dict) 
   lower = {}
   dict.each_pair do |k, v|
-    new_hash.merge!({k.downcase => v})
+    lower.merge!({k.downcase => v})
   end
   return lower
 end
@@ -87,12 +87,12 @@ if $PROGRAM_NAME == __FILE__
   ENV['JWT_SECRET'] = 'NOTASECRET'
 
   # Call /token
-  # PP.pp main(context: {}, event: {
-  #              'body' => '{"name": "bboe"}',
-  #              'headers' => { 'Content-Type' => 'application/json' },
-  #              'httpMethod' => 'POST',
-  #              'path' => '/token'
-  #            })
+  PP.pp main(context: {}, event: {
+               'body' => '{"name": "bboe"}',
+               'headers' => { 'Content-Type' => 'application/json' },
+               'httpMethod' => 'POST',
+               'path' => '/token'
+             })
 
   # Generate a token
   payload = {
