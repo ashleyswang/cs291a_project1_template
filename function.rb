@@ -17,9 +17,9 @@ def main(event:, context:)
     return response(body: nil, status: 405)
   elsif path == '/token'
     handle_token(event)
+  else
+    response(body: event, status: 200)
   end
-
-  response(body: event, status: 200) 
 
 end
 
