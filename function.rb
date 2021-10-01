@@ -49,19 +49,17 @@ def main(event:, context:)
           return response(body: nil, status: 403)
         end
         token = auth_token[1]
-        # decoded_token = ''
+        decoded_token = ''
         begin
           decoded_token = JWT.decode token, ENV['JWT_SECRET'], true, { algorithm: 'HS256' }
-          json_data = decoded_token[0]['data']
-          return response(body: json_data, status: 200)
         rescue JWT::ImmatureSignature, JWT::ExpiredSignature => e
           return response(body: nil, status: 401)
         rescue JWT::DecodeError => e
           return response(body: e, status: 403)
         end
         #found = true
-        # json_data = decoded_token[0]['data']
-        # return response(body: json_data, status: 200)
+        json_data = decoded_token[0]['data']
+        return response(body: json_data, status: 200)
       end
     end
     return response(body: nil, status: 403)
@@ -90,8 +88,8 @@ def main(event:, context:)
 
     payload = {
       data: json_data,
-      exp: Time.now.to_i + 1,
-      nbf: Time.now.to_i
+      exp: Time.now.to_i + 5,
+      nbf: Time.now.to_i + 2
     }
 
     token = JWT.encode(payload, ENV['JWT_SECRET'], 'HS256')
