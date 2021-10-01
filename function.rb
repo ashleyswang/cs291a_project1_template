@@ -25,8 +25,8 @@ def get_root(event)
   # Check Token
   if event['httpMethod'] != 'GET'
     return response(status: 405)
-  elsif !event['headers'].key?('Authorization')
-    return response(status: 403)
+  # elsif !event['headers'].key?('Authorization')
+  #   return response(status: 403)
   end
 
   begin
