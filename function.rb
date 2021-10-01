@@ -36,12 +36,14 @@ def post_token(event)
   # Check HTTP method and content type
   if event['httpMethod'] != 'POST'
     return response(status: 405)
-  elsif event['headers'].key?('Content-Type') && 
-    event['headers']['Content-Type'] != 'application/json'
+  # elsif event['headers'].key?('Content-Type') && 
+  #   event['headers']['Content-Type'] != 'application/json'
+  #   return response(status: 415)
+  elsif event['headers']['Content-Type'] != 'application/json'
     return response(status: 415)
   end
 
-  # Create payload for response
+  # Parse body and create payload for response
   begin
     body = JSON.parse(event['body'])
     payload = {
@@ -52,7 +54,7 @@ def post_token(event)
     token = JWT.encode payload, ENV['JWT_SECRET'], 'HS256'
     return response(body: { token: token }, status: 201)
   rescue Exception => e
-    return response(body: nil, status: 422)
+    return response(status: 422)
   end
 end
 
