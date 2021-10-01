@@ -49,7 +49,7 @@ def main(event:, context:)
           return response(body: nil, status: 403)
         end
         token = auth_token[1]
-        decoded_token = ''
+        # decoded_token = ''
         begin
           decoded_token = JWT.decode token, ENV['JWT_SECRET'], true, { algorithm: 'HS256' }
           json_data = decoded_token[0]['data']
@@ -60,7 +60,8 @@ def main(event:, context:)
           return response(body: e, status: 403)
         end
         #found = true
-
+        # json_data = decoded_token[0]['data']
+        # return response(body: json_data, status: 200)
       end
     end
     return response(body: nil, status: 403)
