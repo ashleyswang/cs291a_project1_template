@@ -13,8 +13,8 @@ def main(event:, context:)
 
   if path != '/' && path != '/token'
     return response(status: 404)
-  elsif path == '/' && method != 'GET'
-    return response(status: 405)
+  elsif path == '/'
+    get_root(event)
   elsif path == '/token'
     post_token(event)
   else
@@ -25,7 +25,9 @@ end
 
 def get_root(event) 
   # Check Token
-  if !event.key?('headers') || !event['headers'].key?('Authorization')
+  if event['httpMethod'] != 'GET'
+    return response(status: 405)
+  elsif !event.key?('headers') || !event['headers'].key?('Authorization')
     return response(status: 403)
   end
 end
