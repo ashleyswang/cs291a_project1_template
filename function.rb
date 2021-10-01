@@ -33,9 +33,7 @@ def get_root(event)
     token = JWT.decode event["headers"]["Authorization"][7..-1], 
       ENV["JWT_SECRET"], true, { algorithm: 'HS256' }
     return response(body: token[0]['data'], status: 200)
-  rescue JWT::ImmatureSignature => e
-    return response(status: 401)
-  rescue JWT::ExpiredSignature => e
+  rescue JWT::ImmatureSignature, JWT::ExpiredSignature => e
     return response(status: 401)
   rescue JWT::DecodeError => e
     return response(status: 403)
