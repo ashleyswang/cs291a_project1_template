@@ -31,8 +31,8 @@ def post_token(event)
     return response(body: nil, status: 415)
   end
 
-  # begin
-  #   JSON.parse(event['body'])
+  begin
+    JSON.parse(event['body'])
 
   #   payload = {
   #     data: event['body'],
@@ -43,9 +43,9 @@ def post_token(event)
   #   body = { token: token }
   #   return response(body: body, status: 201)
 
-  # rescue JSON::ParserError => e  
-  #   response(body: nil, status: 422)
-  # end
+  rescue JSON::ParserError => e  
+    response(body: nil, status: 422)
+  end
 
 end
 
