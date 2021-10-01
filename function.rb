@@ -61,8 +61,8 @@ def main(event:, context:)
         json_data = decoded_token[0]['data']
         return response(body: json_data, status: 200)
       end
-      #return response(body: nil, status: 403)
     end
+    return response(body: nil, status: 403)
   end
 
   # POST
