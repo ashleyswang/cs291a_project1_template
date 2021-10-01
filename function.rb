@@ -12,9 +12,9 @@ def main(event:, context:)
   method = event['httpMethod']
 
   if path != '/' and path != '/token'
-    return response(body: nil, status: 404)
+    return response(status: 404)
   elsif path == '/' and method != 'GET'
-    return response(body: nil, status: 405)
+    return response(status: 405)
   elsif path == '/token'
     post_token(event)
   else
@@ -26,17 +26,15 @@ end
 def post_token(event)  
   # Check HTTP method and content type
   if event['httpMethod'] != 'POST'
-    return response(body: nil, status: 405)
-  elsif event['headers'].key?('Content-Type') and event['headers']['Content-Type'] != 'application/json'
-    return response(body: nil, status: 415)
+    return response(status: 405)
+  elsif event['headers'].key?('Content-Type') and 
+    event['headers']['Content-Type'] != 'application/json'
+    return response(status: 415)
   end
 
   begin
-    if event['body'] == ''
-      return response(body: nil, status: 422)
-    end
-    
-    JSON.parse(event['body'])
+    body = event['body']
+    JSON.parse(body)
 
   #   payload = {
   #     data: event['body'],
