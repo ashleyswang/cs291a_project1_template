@@ -46,8 +46,7 @@ def post_token(event)
   # Check HTTP method and content type
   if event['httpMethod'] != 'POST'
     return response(status: 405)
-  # elsif event['headers'].key?('Content-Type') && 
-  elsif event['headers']['content-type'] != 'application/json'
+  elsif lower_dict(event['headers'])['content-type'] != 'application/json'
     return response(status: 415)
   end
 
@@ -64,6 +63,14 @@ def post_token(event)
   rescue Exception => e
     return response(status: 422)
   end
+end
+
+def lower_dict(dict) 
+  lower = {}
+  dict.each_pair do |k, v|
+    new_hash.merge!({k.downcase => v})
+  end
+  return lower
 end
 
 def response(body: nil, status: 200)
