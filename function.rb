@@ -43,9 +43,6 @@ def get_root(event)
 end
 
 def post_token(event)  
-  # Lowercase header keys
-  event['headers'].map_keys!(&:downcase)
-
   # Check HTTP method and content type
   if event['httpMethod'] != 'POST'
     return response(status: 405)
