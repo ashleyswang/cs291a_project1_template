@@ -16,14 +16,14 @@ def main(event:, context:)
   elsif path == '/' and method != 'GET'
     return response(body: nil, status: 405)
   elsif path == '/token'
-    handle_token(event)
+    post_token(event)
   else
     response(body: event, status: 200)
   end
 
 end
 
-def handle_token(event)  
+def post_token(event)  
   # Check HTTP method and content type
   if event['httpMethod'] != 'POST'
     return response(body: nil, status: 405)
@@ -32,7 +32,15 @@ def handle_token(event)
   end
 
   begin
-    body = JSON.parse(event['body'])
+    JSON.parse(event['body'])
+
+    payload = {
+      data: { event['body'] },
+      exp: Time.now.to_i + 5,
+      nbf: Time.now.to_i + 2
+    }
+    token = JWT.encode payload, ENV['JWT_SECRET'], 'HS256'
+
   rescue JSON::ParserError => e  
     response(body: nil, status: 422)
   end
