@@ -25,7 +25,7 @@ end
 
 def get_root(event) 
   # Check Token
-  if !event['headers'].key?('Authorization')
+  if !event.key?('headers') || !event['headers'].key?('Authorization')
     return response(status: 403)
   end
 end
