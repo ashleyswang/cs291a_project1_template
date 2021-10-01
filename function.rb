@@ -42,8 +42,7 @@ def post_token(event)
     # }
     # token = JWT.encode payload, ENV['JWT_SECRET'], 'HS256'
     # body = { token: token }
-    # return response(body: body, status: 201)
-    return response(status: 201)
+    return response(body: event, status: 201)
 
   rescue JSON::ParserError => e
     return response(body: nil, status: 422)
