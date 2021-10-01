@@ -32,7 +32,10 @@ def post_token(event)
   end
 
   begin
-    puts event['body']
+    if event['body'] == ''
+      return response(body: nil, status: 422)
+    end
+    
     JSON.parse(event['body'])
 
   #   payload = {
@@ -45,7 +48,7 @@ def post_token(event)
   #   return response(body: body, status: 201)
 
   rescue JSON::ParserError => e
-    response(body: nil, status: 422)
+    return response(body: nil, status: 422)
   end
 
 end
