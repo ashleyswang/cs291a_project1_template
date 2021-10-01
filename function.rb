@@ -46,8 +46,8 @@ def post_token(event)
   # Check HTTP method and content type
   if event['httpMethod'] != 'POST'
     return response(status: 405)
-  elsif event['headers'].key?('Content-Type') && 
-    event['headers']['Content-Type'] != 'application/json'
+  # elsif event['headers'].key?('Content-Type') && 
+  elsif event['headers']['Content-Type'] != 'application/json'
     return response(status: 415)
   end
 
